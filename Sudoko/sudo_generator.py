@@ -2,19 +2,10 @@ import math
 import random
 from sudo import solve_sudo
 
+#Sudoku generator
 
 class Sudoku:
-    # mat = [
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0]
-    # ]
+
     blank_elements = []
 
     def __init__(self, nor, k):
@@ -33,7 +24,6 @@ class Sudoku:
         self.fill_rest()
         self.remove_k_elements()
 
-
     def fill_diagonal(self):
         for i in range(0, self.nor, self.srn):
             self.fill_box(i, i)
@@ -46,8 +36,6 @@ class Sudoku:
                     num = random.randint(1, self.nor)
 
                 self.mat[row + k][col + j] = num
-
-
 
     def check(self, num, row, col):
         for i in range(self.srn):
@@ -85,8 +73,6 @@ class Sudoku:
 
             self.mat[x][y] = 0
             self.blank_elements[i] = (x, y)
-
-
 
 
 

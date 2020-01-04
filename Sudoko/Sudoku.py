@@ -7,11 +7,12 @@ from tkinter import *
 import tkinter as tk
 from tkinter import messagebox
 from sudo_generator import Sudoku
-import  os
+import os
 
 pygame.font.init()
 pygame.init()
 
+# Game song: Yanni - In the Morning Light
 music = pygame.mixer.music.load('music.mp3')
 pygame.mixer.music.play(-1)
 clickSound = pygame.mixer.Sound('click.wav')
@@ -20,13 +21,12 @@ win = pygame.display.set_mode((540, 600))
 
 
 class Grid:
+    global k, s
+    k = random.randint(25, 40)
+    s = Sudoku(9, k)
+    s.fill_value()
 
     def __init__(self, rows, cols, width, height):
-        global k, s
-        k = random.randint(25, 40)
-        s = Sudoku(9, k)
-        s.fill_value()
-
         self.board = s.mat
         self.rows = rows
         self.cols = cols
@@ -38,7 +38,6 @@ class Grid:
 
         self.selected = None
         self.win = win
-
 
     def update_model(self):
         self.model = [[self.cubes[i][j].value for j in range(self.cols)] for i in range(self.rows)]
@@ -64,12 +63,12 @@ class Grid:
     def draw(self, win):
         # Draw Grid Lines
         gap = self.width / 9
-        for i in range(self.rows+1):
+        for i in range(self.rows + 1):
             if i % 3 == 0 and i != 0:
                 thick = 4
             else:
                 thick = 1
-            pygame.draw.line(win, (0,0,0), (0, i*gap), (self.width, i*gap), thick)
+            pygame.draw.line(win, (0, 0, 0), (0, i * gap), (self.width, i * gap), thick)
             pygame.draw.line(win, (0, 0, 0), (i * gap, 0), (i * gap, self.height), thick)
 
         # Draw Cubes
@@ -103,7 +102,7 @@ class Grid:
             gap = self.width / 9
             x = pos[0] // gap
             y = pos[1] // gap
-            return (int(y),int(x))
+            return int(y), int(x)
         else:
             return None
 
@@ -114,16 +113,18 @@ class Grid:
                     return False
         return True
 
+    # reset
     def reset(self):
         self.__init__(self.rows, self.cols, self.width, self.height)
 
+    #solver
     def solve(self):
         find = find_empty(self.model)
         if not find:
             return True
         else:
             row, col = find
-        for i in range (1,10):
+        for i in range(1, 10):
             if is_safe(self.model, i, (row, col)):
                 self.model[row][col] = i
                 self.cubes[row][col].set(i)
@@ -150,7 +151,7 @@ class Cube:
     rows = 9
     cols = 9
 
-    def __init__(self, value, row, col, width ,height):
+    def __init__(self, value, row, col, width, height):
         self.value = value
         self.temp = 0
         self.row = row
@@ -160,23 +161,23 @@ class Cube:
         self.selected = False
 
     def draw(self, win):
-        fnt = pygame.font.SysFont("comicsans", 40)
+        fnt = pygame.font.SysFont("Calibri", 30)
         gap = self.width / 9
         x = self.col * gap
         y = self.row * gap
 
         if self.temp != 0 and self.value == 0:
-            text = fnt.render(str(self.temp), 1, (128,128,128))
-            win.blit(text, (x+5, y+5))
-        elif not(self.value == 0):
+            text = fnt.render(str(self.temp), 1, (128, 128, 128))
+            win.blit(text, (x + 5, y + 5))
+        elif not (self.value == 0):
             text = fnt.render(str(self.value), 1, (0, 0, 0))
-            win.blit(text, (x + (gap/2 - text.get_width()/2), y + (gap/2 - text.get_height()/2)))
+            win.blit(text, (x + (gap / 2 - text.get_width() / 2), y + (gap / 2 - text.get_height() / 2)))
 
         if self.selected:
-            pygame.draw.rect(win, (255,0,0), (x,y, gap ,gap), 3)
+            pygame.draw.rect(win, (255, 0, 0), (x, y, gap, gap), 3)
 
     def draw_change(self, win, check):
-        fnt = pygame.font.SysFont("Lato ", 40)
+        fnt = pygame.font.SysFont("Calibri ", 30)
         gap = self.width / 9
         x = self.col * gap
         y = self.row * gap
@@ -203,7 +204,7 @@ def redraw_window(win, board, time, strikes):
     # Draw time
     fnt = pygame.font.SysFont("comicsans", 40)
 
-    text = fnt.render("Time: " + format_time(time), 1, (0,0,0))
+    text = fnt.render("Time: " + format_time(time), 1, (0, 0, 0))
     win.blit(text, (380, 560))
 
     # Draw Strikes
@@ -226,15 +227,14 @@ def message_box(subject, content):
 
 def format_time(secs):
     sec = secs % 60
-    minute = secs//60
-    hour = minute//60
+    minute = secs // 60
+    hour = minute // 60
 
     mat = " " + str(minute) + ":" + str(sec)
     return mat
 
 
 def main():
-
     pygame.display.set_caption("Sudoku: by Arian")
     board = Grid(9, 9, 540, 540)
     key = None
@@ -298,13 +298,10 @@ def main():
                     board.solve()
 
                     Tk().wm_withdraw()
-                    result =  messagebox.askokcancel('Game Finished', ('Would you like to play again?'))
+                    result = messagebox.askokcancel('Game Finished', ('Would you like to play again?'))
                     if result:
                         start = time.time()
                         board.reset()
-
-
-
 
                 # Key r for reseting the game
                 if event.key == pygame.K_r:
@@ -326,4 +323,4 @@ def main():
 
 
 main()
-# pygame.quit()
+pygame.quit()
