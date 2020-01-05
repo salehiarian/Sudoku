@@ -16,17 +16,18 @@ pygame.init()
 music = pygame.mixer.music.load('music.mp3')
 pygame.mixer.music.play(-1)
 clickSound = pygame.mixer.Sound('click.wav')
-
+correctSound = pygame.mixer.Sound('correct.wav')
+# win = pygame.display.set_mode((540, 600))
 win = pygame.display.set_mode((540, 600))
 
 
 class Grid:
-    global k, s
-    k = random.randint(25, 40)
-    s = Sudoku(9, k)
-    s.fill_value()
 
-    def __init__(self, rows, cols, width, height):
+    def __init__(self, rows, cols, width, height, win):
+        global k, s
+        k = random.randint(25, 40)
+        s = Sudoku(9, k)
+        s.fill_value()
         self.board = s.mat
         self.rows = rows
         self.cols = cols
@@ -78,7 +79,6 @@ class Grid:
 
     def select(self, row, col):
         # Reset all other
-        song = 0
 
         for i in range(self.rows):
             for j in range(self.cols):
@@ -115,9 +115,10 @@ class Grid:
 
     # reset
     def reset(self):
-        self.__init__(self.rows, self.cols, self.width, self.height)
+        self.__init__(self.rows, self.cols, self.width, self.height, win)
+        # pygame.display.update()
 
-    #solver
+    # solver
     def solve(self):
         find = find_empty(self.model)
         if not find:
@@ -236,7 +237,8 @@ def format_time(secs):
 
 def main():
     pygame.display.set_caption("Sudoku: by Arian")
-    board = Grid(9, 9, 540, 540)
+    win = pygame.display.set_mode((540, 600))
+    board = Grid(9, 9, 540, 540, win)
     key = None
     run = True
     start = time.time()
@@ -276,10 +278,29 @@ def main():
                     if board.cubes[i][j].temp != 0:
                         if board.place(board.cubes[i][j].temp):
                             print("Correct")
+                            correctSound.play()
                         else:
                             print("Wrong")
                             strikes += 1
                         key = None
+                # Key space for solving the gui
+                elif event.key == pygame.K_SPACE:
+                    board.solve()
+
+                    if board.is_finished():
+                        Tk().wm_withdraw()
+                        result = messagebox.askokcancel('Game Finished', ('Would you like to play again?'))
+                        if result:
+                            start = time.time()
+                            board.reset()
+                        else:
+                            pygame.quit()
+                            sys.exit()
+
+                # Key r for reseting the game
+                elif event.key == pygame.K_r:
+                    start = time.time()
+                    board.reset()
 
                 if board.is_finished():
                     print("Game over")
@@ -291,22 +312,11 @@ def main():
                     if result:
                         start = time.time()
                         board.reset()
+                    else:
+                        pygame.quit()
+                        sys.exit()
 
                     break
-                # Key space for solving the gui
-                if event.key == pygame.K_SPACE:
-                    board.solve()
-
-                    Tk().wm_withdraw()
-                    result = messagebox.askokcancel('Game Finished', ('Would you like to play again?'))
-                    if result:
-                        start = time.time()
-                        board.reset()
-
-                # Key r for reseting the game
-                if event.key == pygame.K_r:
-                    start = time.time()
-                    board.reset()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
