@@ -7,4 +7,4 @@ Sudoku-game, generator and solver written in Python using Backtracking algorithm
 * To reset the sudoku, press the __R__ button.
 If you want to see the solution to the sudoku gui, you can simply press the __Space bar__.
 
-![Sudoku_image](dist/img/Sudoku.png)
+
